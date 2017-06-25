@@ -5,6 +5,12 @@ declare(strict_types = 1);
 use Auryn\Injector as DiContainer;
 use Isslocator\Http\Request as RequestInterface;
 use Isslocator\Http\Response as ResponseInterface;
+use Isslocator\Location\Coordinates\IssRetriever as IssCoordinatesRetriever;
+use Isslocator\Location\Coordinates\Retriever as CoordinatesRetriever;
+use Isslocator\Location\IssRetriever;
+use Isslocator\Location\Retriever as LocationRetriever;
+use Isslocator\Location\Reverse\Geocoder;
+use Isslocator\Location\Reverse\GoogleGeocoder;
 use Isslocator\Template\Renderer;
 use Isslocator\Template\TwigRenderer;
 use Symfony\Component\HttpFoundation\Request as RequestImplementation;
@@ -37,5 +43,9 @@ $diContainer->alias(Renderer::class, TwigRenderer::class);
 $diContainer->define(Twig_Environment::class, [
     ':loader' => new Twig_Loader_Filesystem(dirname(__DIR__) . DS . 'templates')
 ]);
+
+$diContainer->alias(LocationRetriever::class, IssRetriever::class);
+$diContainer->alias(CoordinatesRetriever::class, IssCoordinatesRetriever::class);
+$diContainer->alias(Geocoder::class, GoogleGeocoder::class);
 
 return $diContainer;

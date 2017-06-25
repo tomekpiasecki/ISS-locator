@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Isslocator\Controller;
 
+use Isslocator\Location\Retriever;
 use Isslocator\Template\Renderer;
 
 class IndexAction
@@ -13,9 +14,15 @@ class IndexAction
      */
     private $renderer;
 
-    public function __construct(Renderer $renderer)
+    /**
+     * @var Retriever
+     */
+    private $locationRetriever;
+
+    public function __construct(Renderer $renderer, Retriever $locationRetriever)
     {
         $this->renderer = $renderer;
+        $this->locationRetriever = $locationRetriever;
     }
 
     /**
@@ -26,7 +33,7 @@ class IndexAction
     public function execute()
     {
         return $this->renderer->render('index.html', [
-            'location' => __METHOD__
+            'location' => $this->locationRetriever->retrieveLocation()
         ]);
     }
 }
