@@ -3,6 +3,8 @@
 declare(strict_types = 1);
 
 use Auryn\Injector as DiContainer;
+use Isslocator\Http\Client as HttpClient;
+use Isslocator\Http\GuzzleClient;
 use Isslocator\Http\Request as RequestInterface;
 use Isslocator\Http\Response as ResponseInterface;
 use Isslocator\Location\Coordinates\IssRetriever as IssCoordinatesRetriever;
@@ -47,5 +49,6 @@ $diContainer->define(Twig_Environment::class, [
 $diContainer->alias(LocationRetriever::class, IssRetriever::class);
 $diContainer->alias(CoordinatesRetriever::class, IssCoordinatesRetriever::class);
 $diContainer->alias(Geocoder::class, GoogleGeocoder::class);
+$diContainer->alias(HttpClient::class, GuzzleClient::class);
 
 return $diContainer;
