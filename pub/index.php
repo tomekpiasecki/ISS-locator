@@ -2,12 +2,14 @@
 
 declare(strict_types = 1);
 
+use Auryn\Injector;
 use FastRoute\Dispatcher;
 use Isslocator\Controller\IndexAction;
 
 define('DS', DIRECTORY_SEPARATOR);
 
-require __DIR__ . DS . '..' . DS . 'app' . DS . 'boostrap.php';
+/** @var Injector  $container */
+$diContainer = require __DIR__ . DS . '..' . DS . 'app' . DS . 'boostrap.php';
 
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/', [IndexAction::class, 'execute']);
@@ -28,7 +30,7 @@ switch ($routeInfo[0]) {
         $method = $routeInfo[1][1];
         $parameters = $routeInfo[2];
 
-        $class = new $className;
+        $class = $diContainer->make($className);
         $response = $class->$method($parameters);
         header("HTTP/1.1 200 OK");
         echo $response;
