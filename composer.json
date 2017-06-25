@@ -1,0 +1,18 @@
+{
+  "name": "tomekpiasecki/isslocator",
+  "description": "Site that shows where the ISS is currently at",
+  "authors": [
+    {
+      "name": "Tomasz Piasecki"
+    }
+  ],
+  "require": {
+    "php": ">=7.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Isslocator\\": "src/"
+    }
+  },
+  "minimum-stability": "stable"
+}
