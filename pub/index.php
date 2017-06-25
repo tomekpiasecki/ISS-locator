@@ -5,6 +5,8 @@ declare(strict_types = 1);
 use Auryn\Injector;
 use FastRoute\Dispatcher;
 use Isslocator\Controller\IndexAction;
+use Isslocator\Http\Request;
+use Isslocator\Http\Response;
 
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -15,15 +17,20 @@ $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/', [IndexAction::class, 'execute']);
 });
 
-$routeInfo = $dispatcher->dispatch($_SERVER['REQUEST_METHOD'], $_SERVER['REQUEST_URI']);
+/** @var Request $request */
+$request = $diContainer->make(Request::class);
+/** @var Response $response */
+$response = $diContainer->make(Response::class);
+
+$routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getRequestUri());
 switch ($routeInfo[0]) {
     case Dispatcher::NOT_FOUND:
-        header("HTTP/1.1 404 Not Found");
-        echo '<h1>Not found</h1>';
+        $response->setStatusCode(404);
+        $response->setContent('<h1>Not found</h1>');
         break;
     case Dispatcher::METHOD_NOT_ALLOWED:
-        header("HTTP/1.1 405 Method Not Allowed");
-        echo '<h1>Method not allowed</h1>';
+        $response->setStatusCode(405);
+        $response->setContent('<h1>Method not allowed</h1>');
         break;
     case Dispatcher::FOUND:
         $className = $routeInfo[1][0];
@@ -31,8 +38,12 @@ switch ($routeInfo[0]) {
         $parameters = $routeInfo[2];
 
         $class = $diContainer->make($className);
-        $response = $class->$method($parameters);
-        header("HTTP/1.1 200 OK");
-        echo $response;
+        $content = $class->$method($parameters);
+
+        $response->setStatusCode(200);
+        $response->setContent($content);
         break;
 }
+
+$response->prepare($request);
+$response->send();
