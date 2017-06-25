@@ -5,6 +5,8 @@ declare(strict_types = 1);
 use Auryn\Injector as DiContainer;
 use Isslocator\Http\Request as RequestInterface;
 use Isslocator\Http\Response as ResponseInterface;
+use Isslocator\Template\Renderer;
+use Isslocator\Template\TwigRenderer;
 use Symfony\Component\HttpFoundation\Request as RequestImplementation;
 use Symfony\Component\HttpFoundation\Response as ResponseImplementation;
 
@@ -30,5 +32,10 @@ $diContainer->define(RequestImplementation::class, [
 
 $diContainer->alias(ResponseInterface::class, ResponseImplementation::class);
 $diContainer->share(ResponseImplementation::class);
+
+$diContainer->alias(Renderer::class, TwigRenderer::class);
+$diContainer->define(Twig_Environment::class, [
+    ':loader' => new Twig_Loader_Filesystem(dirname(__DIR__) . DS . 'templates')
+]);
 
 return $diContainer;

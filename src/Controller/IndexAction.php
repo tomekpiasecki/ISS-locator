@@ -4,8 +4,20 @@ declare(strict_types = 1);
 
 namespace Isslocator\Controller;
 
+use Isslocator\Template\Renderer;
+
 class IndexAction
 {
+    /**
+     * @var Renderer
+     */
+    private $renderer;
+
+    public function __construct(Renderer $renderer)
+    {
+        $this->renderer = $renderer;
+    }
+
     /**
      * Executes the action and returns response content
      *
@@ -13,6 +25,8 @@ class IndexAction
      */
     public function execute()
     {
-        return __METHOD__;
+        return $this->renderer->render('index.html', [
+            'location' => __METHOD__
+        ]);
     }
 }
