@@ -4,15 +4,92 @@ declare(strict_types = 1);
 
 namespace Isslocator\Location\Reverse;
 
+use Isslocator\Http\Client as HttpClient;
 use Isslocator\Location\Coordinates;
 
 class GoogleGeocoder implements Geocoder
 {
+    const RESPONSE_STATUS_SUCCESS = 'OK';
+    const RESPONSE_STATUS_ZERO_RESULTS = 'ZERO_RESULTS';
+
+    /**
+     * @var HttpClient
+     */
+    protected $httpClient;
+
+    /**
+     * @var string
+     */
+    private $mapsApiKey = 'AIzaSyAU7XLYVTdYPpvffe_-adjHTGA_VGOgjEU';
+
+    /**
+     * @var string
+     */
+    private $endpointUrl = 'https://maps.googleapis.com/maps/api/geocode/json?latlng=%s,%s&key=%s';
+
+    /**
+     * @var array
+     */
+    protected $response = [];
+
+    public function __construct(HttpClient $httpClient)
+    {
+        $this->httpClient = $httpClient;
+    }
+
     /**
      * @inheritdoc
      */
     public function geocode(Coordinates $coordinates): string
     {
-        return date('d-m-Y H:i:s') . ' ' . $coordinates->getLatitude() . ' ' . $coordinates->getLongitude();
+        $this->response = $this->httpClient->request(
+            HttpClient::REQUEST_METHOD_GET,
+            $this->getEndpointUrl($coordinates->getLatitude(), $coordinates->getLongitude())
+        );
+
+        if ($this->response['status'] !== self::RESPONSE_STATUS_SUCCESS &&
+            $this->response['status'] !== self::RESPONSE_STATUS_ZERO_RESULTS
+        ) {
+            throw new \Exception('invalid google reposne');
+        }
+
+        return $this->extractLocationFromResponse();
+    }
+
+    /**
+     * Extract human readable address from api response
+     *
+     * @return string
+     */
+    protected function extractLocationFromResponse():string
+    {
+        if (!isset($this->response['results']) ||
+            !is_array($this->response['results']) ||
+            !isset($this->response['results'][0]) ||
+            !is_array($this->response['results'][0]) ||
+            !isset($this->response['results'][0]['formatted_address'])
+        ) {
+            return '';
+        }
+
+        return $this->response['results'][0]['formatted_address'];
+    }
+
+    /**
+     * @param float $latitude
+     * @param float $longitude
+     * @return string
+     */
+    protected function getEndpointUrl(float $latitude, float $longitude):string
+    {
+        return sprintf($this->endpointUrl, $latitude, $longitude, $this->getMapsApiKey());
+    }
+
+    /**
+     * @return string
+     */
+    protected function getMapsApiKey():string
+    {
+        return $this->mapsApiKey;
     }
 }
