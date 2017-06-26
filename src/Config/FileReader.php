@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace Isslocator\Config;
 
+use Isslocator\Exception\ConfigException;
+
 class FileReader implements Reader
 {
     /**
@@ -18,6 +20,9 @@ class FileReader implements Reader
 
     public function __construct(string $configPath)
     {
+        if ($configPath === '') {
+            throw new \InvalidArgumentException("Config file path can not be empty");
+        }
         $this->configPath = $configPath;
         $this->loadConfig();
     }
@@ -33,18 +38,18 @@ class FileReader implements Reader
     /**
      * Loads config from file
      *
-     * @throws \Exception
+     * @throws ConfigException
      */
     private function loadConfig()
     {
         if (!file_exists($this->configPath) || !is_readable($this->configPath)) {
-            throw new \Exception('Not able to load config file');
+            throw new ConfigException("Not able to load config from {$this->configPath}");
         }
 
         $this->config = parse_ini_file($this->configPath);
 
         if (!is_array($this->config)) {
-            throw new \Exception('Errow while parsing config file');
+            throw new ConfigException("Error while parsing config file ({$this->configPath})");
         }
     }
 }

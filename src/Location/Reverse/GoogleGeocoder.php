@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace Isslocator\Location\Reverse;
 
 use Isslocator\Config\Reader as ConfigReader;
+use Isslocator\Exception\GeocoderException;
 use Isslocator\Http\Client as HttpClient;
 use Isslocator\Location\Coordinates;
 
@@ -45,19 +46,29 @@ class GoogleGeocoder implements Geocoder
     }
 
     /**
-     * @inheritdoc
+     * Geocodes coordinates to human readable address
+     *
+     * @return string
+     * @throws GeocoderException
      */
     public function geocode(Coordinates $coordinates): string
     {
-        $this->response = $this->httpClient->request(
-            HttpClient::REQUEST_METHOD_GET,
-            $this->getEndpointUrl($coordinates->getLatitude(), $coordinates->getLongitude())
-        );
+        $uri = $this->getEndpointUrl($coordinates->getLatitude(), $coordinates->getLongitude());
 
-        if ($this->response['status'] !== self::RESPONSE_STATUS_SUCCESS &&
-            $this->response['status'] !== self::RESPONSE_STATUS_ZERO_RESULTS
-        ) {
-            throw new \Exception('invalid google reposne');
+        try {
+            $this->response = $this->httpClient->request(HttpClient::REQUEST_METHOD_GET, $uri);
+
+            if ($this->response['status'] !== self::RESPONSE_STATUS_SUCCESS &&
+                $this->response['status'] !== self::RESPONSE_STATUS_ZERO_RESULTS
+            ) {
+                throw new \RuntimeException("Request to $uri completed with status {$this->response['status']}");
+            }
+        } catch (\Throwable $ex) {
+            throw new GeocoderException(
+                "Failed to retrieve location for {$coordinates->getLatitude()} {$coordinates->getLongitude()}",
+                0,
+                $ex
+            );
         }
 
         return $this->extractLocationFromResponse();

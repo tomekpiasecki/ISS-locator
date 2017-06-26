@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Isslocator\Location\Coordinates;
 
+use Isslocator\Exception\CoordinatesException;
 use Isslocator\Http\Client as HttpClient;
 use Isslocator\Location\Coordinates;
 
@@ -30,13 +31,21 @@ class IssRetriever implements Retriever
     }
 
     /**
-     * @inheritdoc
+     * Retrieves current coordinates of ISS station
+     *
+     * @return Coordinates
+     * @throws CoordinatesException
      */
     public function retrieveCoordinates(): Coordinates
     {
-        $response = $this->httpClient->request(HttpClient::REQUEST_METHOD_GET, $this->getEndpointUrl());
-        if (!isset($response['latitude']) || !isset($response['longitude'])) {
-            throw new \Exception('no lll');
+        $uri = $this->getEndpointUrl();
+        try {
+            $response = $this->httpClient->request(HttpClient::REQUEST_METHOD_GET, $uri);
+            if (!isset($response['latitude']) || !isset($response['longitude'])) {
+                throw new \RuntimeException("Incomplete response received from $uri " . print_r($response, true));
+            }
+        } catch (\Throwable $ex) {
+            throw new CoordinatesException("Failed to retrieve coordinates", 0, $ex);
         }
 
         return new Coordinates($response['latitude'], $response['longitude']);

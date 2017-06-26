@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace Isslocator\Template;
 
+use Isslocator\Exception\RendererException;
+
 class TwigRenderer implements Renderer
 {
     /**
@@ -26,9 +28,15 @@ class TwigRenderer implements Renderer
      * @param array  $data An array of parameters to pass to the template
      *
      * @return string The rendered template
+     *
+     * @throws RendererException
      */
     public function render(string $template, array $data = []): string
     {
-        return $this->renderer->render($template, $data);
+        try {
+            return $this->renderer->render($template, $data);
+        } catch (\Throwable $ex) {
+            throw new RendererException("Failed to render $template", 0, $ex);
+        }
     }
 }
