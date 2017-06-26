@@ -10,9 +10,9 @@ interface Client
      * Sends http request
      *
      * @param string $method Http method
-     * @param string $uri
+     * @param string $uri JSON api endpoint
      * @param array $options
-     * @return mixed
+     * @return array Associative array containing decoded response body
      */
-    public function request(string $method, string $uri = '', array $options = []);
+    public function request(string $method, string $uri = '', array $options = []):array;
 }
