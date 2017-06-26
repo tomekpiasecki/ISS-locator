@@ -12,7 +12,7 @@ use Monolog\Logger;
 define('DS', DIRECTORY_SEPARATOR);
 
 /** @var Injector  $container */
-$diContainer = require __DIR__ . DS . '..' . DS . 'app' . DS . 'boostrap.php';
+$diContainer = require dirname(__DIR__) . DS . 'app' . DS . 'boostrap.php';
 
 $dispatcher = FastRoute\simpleDispatcher(function(FastRoute\RouteCollector $r) {
     $r->addRoute('GET', '/', [IndexAction::class, 'execute']);
@@ -52,7 +52,7 @@ try {
     $logger->error($ex->getMessage(), ['exception' => $ex] );
 
     $response->setStatusCode(500);
-    $response->setContent(@file_get_contents(__DIR__ . DS . '..' . DS . 'templates' . DS . '500.html'));
+    $response->setContent(@file_get_contents(dirname(__DIR__) . DS . 'templates' . DS . '500.html'));
 }
 
 $response->prepare($request);

@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response as ResponseImplementation;
 
 error_reporting(E_ALL);
 
-require __DIR__ . DS . '..' . DS . "vendor" . DS . "autoload.php";
+require dirname(__DIR__) . DS . "vendor" . DS . "autoload.php";
 
 $diContainer = new DiContainer;
 
@@ -62,7 +62,7 @@ $diContainer->define(Logger::class, [
     ':name' => 'iss_logger'
 ]);
 $diContainer->prepare(Logger::class, function ($myObject, $container) {
-    $myObject->pushHandler(new StreamHandler(__DIR__. DS . '..' . DS . 'var' . DS . 'app.log', \Monolog\Logger::DEBUG));
+    $myObject->pushHandler(new StreamHandler(dirname(__DIR__) . DS . 'var' . DS . 'app.log', \Monolog\Logger::DEBUG));
 });
 
 return $diContainer;
