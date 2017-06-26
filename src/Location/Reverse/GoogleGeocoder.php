@@ -4,6 +4,7 @@ declare(strict_types = 1);
 
 namespace Isslocator\Location\Reverse;
 
+use Isslocator\Config\Reader as ConfigReader;
 use Isslocator\Http\Client as HttpClient;
 use Isslocator\Location\Coordinates;
 
@@ -20,7 +21,7 @@ class GoogleGeocoder implements Geocoder
     /**
      * @var string
      */
-    private $mapsApiKey = 'AIzaSyAU7XLYVTdYPpvffe_-adjHTGA_VGOgjEU';
+    private $mapsApiKeyConfigParam = 'maps_api_key';
 
     /**
      * @var string
@@ -32,9 +33,15 @@ class GoogleGeocoder implements Geocoder
      */
     protected $response = [];
 
-    public function __construct(HttpClient $httpClient)
+    /**
+     * @var ConfigReader
+     */
+    private $config;
+
+    public function __construct(HttpClient $httpClient, ConfigReader $config)
     {
         $this->httpClient = $httpClient;
+        $this->config = $config;
     }
 
     /**
@@ -90,6 +97,6 @@ class GoogleGeocoder implements Geocoder
      */
     protected function getMapsApiKey():string
     {
-        return $this->mapsApiKey;
+        return $this->config->get($this->mapsApiKeyConfigParam);
     }
 }
