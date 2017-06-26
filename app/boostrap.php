@@ -3,6 +3,8 @@
 declare(strict_types = 1);
 
 use Auryn\Injector as DiContainer;
+use Isslocator\Config\Reader as ConfigReaderInterface;
+use Isslocator\Config\FileReader as FileConfigReader;
 use Isslocator\Http\Client as HttpClient;
 use Isslocator\Http\GuzzleClient;
 use Isslocator\Http\Request as RequestInterface;
@@ -43,6 +45,12 @@ $diContainer->share(ResponseImplementation::class);
 $diContainer->alias(Renderer::class, TwigRenderer::class);
 $diContainer->define(Twig_Environment::class, [
     ':loader' => new Twig_Loader_Filesystem(dirname(__DIR__) . DS . 'templates')
+]);
+
+$diContainer->alias(ConfigReaderInterface::class, FileConfigReader::class);
+$diContainer->share(FileConfigReader::class);
+$diContainer->define(FileConfigReader::class, [
+    ':configPath' => dirname(__DIR__) . DS . 'app' . DS . 'etc' . DS . 'config.ini'
 ]);
 
 $diContainer->alias(LocationRetriever::class, IssRetriever::class);
