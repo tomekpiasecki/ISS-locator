@@ -6,6 +6,10 @@ namespace Isslocator\Http;
 
 interface Client
 {
+    const RESPONSE_CODE_SUCCESS = 200;
+
+    const REQUEST_METHOD_GET = 'GET';
+
     /**
      * Sends http request
      *
