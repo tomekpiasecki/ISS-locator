@@ -1,2 +1,5 @@
+{% extends "layout.html" %}
+{% block content %}
 <h1>Where is ISS at?</h1>
-{{location}}
+<p>{{location|nl2br}}</p>
+{% endblock %}

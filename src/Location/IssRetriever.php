@@ -18,7 +18,8 @@ class IssRetriever implements Retriever
      * @var string
      */
     private $coordinatesMessage = <<<MESSAGE
-Current coordinates of the ISS position are latitude: %s, longitude: %s. We were not able to retrieve human readable location so it's probably over an ocean. Please try again later.
+Current coordinates of the ISS position are latitude: %s, longitude: %s.
+We were not able to retrieve human readable location so it's probably over an ocean. Please try again later.
 MESSAGE;
 
 
