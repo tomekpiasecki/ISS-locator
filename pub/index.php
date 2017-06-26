@@ -7,6 +7,7 @@ use FastRoute\Dispatcher;
 use Isslocator\Controller\IndexAction;
 use Isslocator\Http\Request;
 use Isslocator\Http\Response;
+use Monolog\Logger;
 
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -46,6 +47,10 @@ try {
             break;
     }
 } catch (\Throwable $ex) {
+    /** @var Logger $logger */
+    $logger = $diContainer->make(Logger::class);
+    $logger->error($ex->getMessage(), ['exception' => $ex] );
+
     $response->setStatusCode(500);
     $response->setContent(@file_get_contents(__DIR__ . DS . '..' . DS . 'templates' . DS . '500.html'));
 }

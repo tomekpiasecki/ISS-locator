@@ -15,13 +15,12 @@ use Isslocator\Location\Reverse\Geocoder;
 use Isslocator\Location\Reverse\GoogleGeocoder;
 use Isslocator\Template\Renderer;
 use Isslocator\Template\TwigRenderer;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
 use Symfony\Component\HttpFoundation\Request as RequestImplementation;
 use Symfony\Component\HttpFoundation\Response as ResponseImplementation;
 
 error_reporting(E_ALL);
-
-//TODO remove
-ini_set('display_errors', '1');
 
 require __DIR__ . DS . '..' . DS . "vendor" . DS . "autoload.php";
 
@@ -50,5 +49,12 @@ $diContainer->alias(LocationRetriever::class, IssRetriever::class);
 $diContainer->alias(CoordinatesRetriever::class, IssCoordinatesRetriever::class);
 $diContainer->alias(Geocoder::class, GoogleGeocoder::class);
 $diContainer->alias(HttpClient::class, GuzzleClient::class);
+
+$diContainer->define(Logger::class, [
+    ':name' => 'iss_logger'
+]);
+$diContainer->prepare(Logger::class, function ($myObject, $container) {
+    $myObject->pushHandler(new StreamHandler(__DIR__. DS . '..' . DS . 'var' . DS . 'app.log', \Monolog\Logger::DEBUG));
+});
 
 return $diContainer;
