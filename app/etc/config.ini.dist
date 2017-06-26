@@ -1,1 +1,4 @@
 maps_api_key = "enter google maps api key here"
+
+;see http://wheretheiss.at/w/developer
+satelite_id = 25544
