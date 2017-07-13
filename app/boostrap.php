@@ -24,6 +24,10 @@ use Symfony\Component\HttpFoundation\Response as ResponseImplementation;
 
 error_reporting(E_ALL);
 
+if (!defined('DS')) {
+    define('DS', DIRECTORY_SEPARATOR);
+}
+
 require dirname(__DIR__) . DS . "vendor" . DS . "autoload.php";
 
 $diContainer = new DiContainer;
